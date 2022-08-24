@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>1. ネットワークの表現 &#8212; Network Science 0.0.1 ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/haiku.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="2. 規則的なネットワーク" href="netsci2.html" />
+    <link rel="prev" title="ネットワークのお勉強" href="../index.html" /> 
+  </head><body>
+      <div class="header" role="banner">
+        <a href="../index.html">
+          <img class="logo" src="../_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        «&#160;&#160;<a href="../index.html">ネットワークのお勉強</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">コンテンツ</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="netsci2.html">2. 規則的なネットワーク</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content" role="main">
+        
+        
+  <section id="id1">
+<h1>1. ネットワークの表現<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<section id="id2">
+<h2>はじめに<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>グラフが扱えるとたくさんの問題が情報科学的にみられるようになります。路線図、血縁関係、物流など世の中にはグラフで表すことができるものが多くあります。いろいろな事象、現象の接続関係をグラフでモデル化することで、プログラムでいろんな問題を考えることができるようになって楽しくなります。</p>
+</section>
+<section id="id3">
+<h2>用語の確認<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p>グラフは、いくつかの頂点（点、節点、ノード、vertex）とそれらをつなぐいくつかの辺（枝、線、エッジ、arc）からなる図形</p></li>
+<li><p>頂点集合V と辺集合E でグラフG = (V;E) を表す．</p></li>
+<li><p>例: 3 つの頂点V = {1; 2; 3}の辺を全て結んだグラフ(=三角形) は，E = {{1; 2}; {2; 3}; {3; 1}}</p></li>
+<li><p>有向辺（→）をもつ有向グラフと無向辺（－）をもつ無向グラフがある。</p></li>
+<li><p>次数：ある頂点に接続する辺の数を次数という（eg. 3角形のグラフの各頂点の次数は２）。</p></li>
+<li><p>隣接：二つの頂点が共通の接続辺をもつとき隣接するという。</p></li>
+<li><p>道（路）:隣接する頂点をリストにして並べたものを道（路、path, trail, walk,それぞれちょっとずつ使い方を変えるけど）と呼ぶ。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h2>グラフの表現<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<section id="id5">
+<h3>隣接行列<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>隣接行列では、節点iからjへの辺が存在する時、行列のi行目j列目の値を1に、そうでないときに0とする。辺に向きのない、無向グラフを扱う場合には行列は対称になる。グラフを行列で扱うことでいろいろな数学的な扱いが可能になります。</p>
+<a class="reference internal image-reference" href="../_images/fig1_1.png"><img alt="../_images/fig1_1.png" class="align-center" src="../_images/fig1_1.png" style="width: 459.20000000000005px; height: 204.0px;" /></a>
+</section>
+<section id="id6">
+<h3>隣接リスト<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>隣接リストでは、下のような各頂点が持つ接続先をリストとしてグラフを表されます。
+* 1 → [2]
+* 2 → [1,3,4]
+* 3 → [2,4]
+* 4 → [2,3]
+* D={1:[2],2:[1,3,4],3:[2,4],4:[2,3]}
+つまり、li=[[2],[1,3,4],[2,4,],[2,3]]として、頂点Nの接続先はli[N]となります。辺の数がN^2よりかなり少ない疎なグラフの場合、隣接行列はほとんどの要素が０になり無駄が多いので、隣接行列を用いることがふさわしい。</p>
+</section>
+</section>
+<section id="network-x">
+<h2>Network Xをつかってみる<a class="headerlink" href="#network-x" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>NetworkXは、pythonでグラフ、ネットワークを扱うためのライブラリで、非常にたくさんの機能が実装されており、グラフの作成、分析、描画までがこれだけでできます。</p>
+<blockquote>
+<div><p><a class="reference external" href="https://networkx.org/documentation/stable/index.html">https://networkx.org/documentation/stable/index.html</a></p>
+</div></blockquote>
+<section id="id7">
+<h3>グラフの作成<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>頂点と辺からグラフを作る</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span> <span class="c1"># networkxをインポート</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span> <span class="c1">#描画のため</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span> <span class="c1"># 点も辺もない空っぽのグラフを作る</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#頂点1を加える</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span><span class="c1"># 2,3,4,5をまとめて加える</span>
+
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c1">#辺(1,2)を加える</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span> <span class="c1">#まとめて辺を加える</span>
+
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1">#描画</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>隣接行列・隣接リストからグラフを作る</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">edgelist</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span>  <span class="c1">#隣接リスト</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span> <span class="c1"># 隣接行列</span>
+<span class="n">G2</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_edgelist</span><span class="p">(</span><span class="n">edgelist</span><span class="p">)</span> <span class="c1"># 隣接リストからグラフをつくる</span>
+<span class="n">G3</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_numpy_matrix</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="c1"># 隣接行列からグラフを作る</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G3</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h3>グラフの描画<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>NetworkXの関数、draw_networkx()をとりあえず使いましょう。いろいろなオプションを設定することできれいなグラフが作れます。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span>
+        <span class="n">pos</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">circular_layout</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="c1"># レイアウト</span>
+        <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="c1"># ラベルの有無</span>
+        <span class="n">node_color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="c1"># 頂点の色</span>
+        <span class="n">node_size</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="c1"># 頂点の大きさ</span>
+        <span class="n">edge_color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="c1"># 辺の色</span>
+        <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># 辺の太さ</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>レイアウトについて</p>
+<p>グラフを描画するときに頂点をどのように配置するかが見やすさに大きく影響します。頂点や辺が重ならず、均等に配置できるよういろいろな工夫が存在します。NetworkXでは、多くのレイアウトが用意されています。</p>
+<ul class="simple">
+<li><p>spring_layout(): ばねで頂点どうしがつながれている感じ</p></li>
+<li><p>circular_layout: 円環状に配置</p></li>
+<li><p>random_layout: ランダムに配置</p></li>
+</ul>
+</div>
+<p>ここでは、有名なZachary's Karate Clubのソーシャルネットワークを使いましょう。この空手クラブは、後にMr. HIとOfficerの二つの派閥に分裂します。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">karate_club_graph</span><span class="p">()</span> <span class="c1"># GとしてKarate Clubのグラフを作成</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;club&quot;</span><span class="p">])</span> <span class="c1">#　派閥はattributeとして記録されている</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">30</span><span class="p">][</span><span class="s2">&quot;club&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>描画してみましょう</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">P</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>派閥ごとに色分けしてみます。nodeとedgeとlabelをそれぞれ別々に書く関数を使います。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node_list1</span><span class="o">=</span><span class="p">[]</span> <span class="c1">#派閥ごとの頂点リストを作る</span>
+<span class="n">node_list2</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">l</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;club&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;Mr. Hi&quot;</span><span class="p">:</span> <span class="c1">#派閥を読み取って</span>
+        <span class="n">node_list1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="c1">#分ける</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">node_list2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="n">nodelist</span><span class="o">=</span><span class="n">node_list1</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span> <span class="c1"># Mr.Hiの派閥の点を描画</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="n">nodelist</span><span class="o">=</span><span class="n">node_list2</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span> <span class="c1"># officerの派閥の点を描画</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">)</span> <span class="c1"># edgeを描画</span>
+<span class="n">labels</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">)</span> <span class="c1"># ラベルを描画</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id9">
+<h2>簡単なグラフの特徴量<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<section id="id10">
+<h3>次数<a class="headerlink" href="#id10" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>各頂点に接続している辺の数を次数と呼びます。各頂点の次数がすべて偶数であればそのグラフはオイラー閉路を持ちます。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>次数ヒストグラムを書いて、次数の分布をみておきましょう。後々、重要になります。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">H</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">degree_histogram</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1"># 度数を返す</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">17</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="id11">
+<h3>グラフの密度<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>グラフの頂点の数に対して可能な最大の辺の数で、実際の辺の数を割ったもの。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">nx</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h3>中心性<a class="headerlink" href="#id12" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>グラフには重要な頂点とそうでない頂点がある。この重要度を測る指標として中心性がある。どのような頂点を重要と考えるかによって、いろいろな中心性がある。
+<a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/centrality.html">https://networkx.org/documentation/stable/reference/algorithms/centrality.html</a></p>
+<section id="id13">
+<h4>次数中心性<a class="headerlink" href="#id13" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>次数が多いものが中心</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">D</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">degree_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>カラーマップを使って描画してみる（<a class="reference external" href="https://matplotlib.org/stable/tutorials/colors/colormaps.html">https://matplotlib.org/stable/tutorials/colors/colormaps.html</a>）</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">nodes</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">plasma</span><span class="p">,</span><span class="n">node_color</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+<span class="n">labels</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id14">
+<h4>媒介中心性<a class="headerlink" href="#id14" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>2頂点間の最短路に含まれる数が多いほど中心</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">B</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">betweenness_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">nodes</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">plasma</span><span class="p">,</span><span class="n">node_color</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+<span class="n">labels</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id15">
+<h4>近接中心性<a class="headerlink" href="#id15" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>距離がみんなに近いほど中心</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">C</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">closeness_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">nodes</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">plasma</span><span class="p">,</span><span class="n">node_color</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+<span class="n">labels</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/fig1_2.png"><img alt="../_images/fig1_2.png" class="align-center" src="../_images/fig1_2.png" style="width: 904.0px; height: 286.40000000000003px;" /></a>
+</section>
+</section>
+</section>
+</section>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        «&#160;&#160;<a href="../index.html">ネットワークのお勉強</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">コンテンツ</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="netsci2.html">2. 規則的なネットワーク</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haruaki Fukuda.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+  </body>
+</html>
