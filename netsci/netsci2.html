@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>2. 規則的なネットワーク &#8212; Network Science 0.0.1 ドキュメント</title>
+    <title>2. 規則的なネットワークと木 &#8212; Network Science 0.0.1 ドキュメント</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/haiku.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -39,20 +39,150 @@
         
         
   <section id="id1">
-<h1>2. 規則的なネットワーク<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<h1>2. 規則的なネットワークと木<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
 <section id="id2">
 <h2>はじめに<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <ul class="simple">
-<li><p>連結</p></li>
-<li><p>路</p></li>
-<li><p>閉路</p></li>
+<li><p>道（路）:隣接する頂点をリストにして並べたものを道（路、path, trail, walk,それぞれちょっとずつ使い方を変えるけど）と呼ぶ。</p></li>
+<li><p>連結: グラフGにおいて、任意の２頂点間に道が存在するとき、グラフGは連結であるという。</p></li>
+<li><p>閉路：始点と終点が同じ道のこと</p></li>
 </ul>
 </section>
 <section id="id3">
-<h2>木構造<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>完全グラフ<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>すべての頂点が辺で結ばれたグラフを <strong>完全グラフ</strong> と呼ぶ。これは、すべての頂点間の相互作用を認めるため、構造を無視しているのと等しい。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span> <span class="c1"># これで完全グラフが作られる</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">G</span><span class="p">))</span> <span class="c1">#次数の確認</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1">#描画</span>
+</pre></div>
+</div>
+<p>実際に完全グラフが現れることは少ないが、グラフの中で部分的に完全グラフが含まれることはある。このような、一つのグラフの中に埋め込まれたグラフを <strong>部分グラフ</strong> といい、部分グラフとしての完全グラフを <strong>クリーク</strong> と呼ぶ。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">ring_of_cliques</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="c1">#6個の5点からなるクリークをつなぐ</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="id4">
-<h2>格子構造<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h2>木構造<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>木は一般のグラフより扱いやすい。木で表すことができるものも多い（ファイルシステムや家系図など）。</p>
+<p>木の頂点の特別な一つを根（root）と呼ぶ。次数1 の点を葉(leaf)と呼ぶ。辺で結ばれた2頂点について、根に近い方の頂点（あるいは根）を親（parent）と呼び，遠い方を子（child）と呼ぶ。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">balanced_tree</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="c1"># それぞれの頂点が3つの子を持つ深さ５の木</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">is_tree</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">forest_str</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="c1">#テキストで描画</span>
+
+<span class="c1"># networkxは木の描画がちょっと苦手</span>
+<span class="n">P</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">nx_pydot</span><span class="o">.</span><span class="n">graphviz_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;dot&#39;</span><span class="p">)</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="n">node_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">with_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="id5">
+<h3>最小共通祖先<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>木において、二つの頂点に共通する祖先で最も近い頂点を <strong>最小共通祖先</strong> という。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span> <span class="c1"># 空っぽの有向グラフを作る</span>
+<span class="c1">#　次にエッジを付け加えていく</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">([(</span><span class="s2">&quot;動物&quot;</span><span class="p">,</span><span class="s2">&quot;両生類&quot;</span><span class="p">),(</span><span class="s2">&quot;動物&quot;</span><span class="p">,</span><span class="s2">&quot;爬虫類&quot;</span><span class="p">),</span>
+                                <span class="p">(</span><span class="s2">&quot;動物&quot;</span><span class="p">,</span><span class="s2">&quot;哺乳類&quot;</span><span class="p">),(</span><span class="s2">&quot;両生類&quot;</span><span class="p">,</span><span class="s2">&quot;カエル&quot;</span><span class="p">),</span>
+                                <span class="p">(</span><span class="s2">&quot;爬虫類&quot;</span><span class="p">,</span><span class="s2">&quot;トカゲ&quot;</span><span class="p">),(</span><span class="s2">&quot;爬虫類&quot;</span><span class="p">,</span><span class="s2">&quot;カメ&quot;</span><span class="p">),</span>
+                                <span class="p">(</span><span class="s2">&quot;カエル&quot;</span><span class="p">,</span><span class="s2">&quot;アマガエル&quot;</span><span class="p">),(</span><span class="s2">&quot;カエル&quot;</span><span class="p">,</span><span class="s2">&quot;ヒキガエル&quot;</span><span class="p">),</span>
+                                <span class="p">(</span><span class="s2">&quot;トカゲ&quot;</span><span class="p">,</span><span class="s2">&quot;ヤモリ&quot;</span><span class="p">),(</span><span class="s2">&quot;トカゲ&quot;</span><span class="p">,</span><span class="s2">&quot;カメレオン&quot;</span><span class="p">),</span>
+                                <span class="p">(</span><span class="s2">&quot;両生類&quot;</span><span class="p">,</span><span class="s2">&quot;イモリ&quot;</span><span class="p">),(</span><span class="s2">&quot;カメ&quot;</span><span class="p">,</span><span class="s2">&quot;クサガメ&quot;</span><span class="p">),</span>
+                                <span class="p">(</span><span class="s2">&quot;カメ&quot;</span><span class="p">,</span><span class="s2">&quot;カミツキガメ&quot;</span><span class="p">)])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">forest_str</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;動物&quot;</span><span class="p">]))</span>
+
+<span class="c1"># 最小共通祖先を確認</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">lowest_common_ancestor</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="s2">&quot;爬虫類&quot;</span><span class="p">,</span><span class="s2">&quot;哺乳類&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">lowest_common_ancestor</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="s2">&quot;イモリ&quot;</span><span class="p">,</span><span class="s2">&quot;アマガエル&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">lowest_common_ancestor</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="s2">&quot;カミツキガメ&quot;</span><span class="p">,</span><span class="s2">&quot;カメレオン&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">lowest_common_ancestor</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="s2">&quot;ヤモリ&quot;</span><span class="p">,</span><span class="s2">&quot;イモリ&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>それぞれ、同じグループにあるものをつないで（併合、ここでは頂点と頂点、木と木でもつなげる）、同一の根を持つか調べることでグループを判定できる</p>
+</section>
+<section id="union-find-tree">
+<h3>Union-Find Tree<a class="headerlink" href="#union-find-tree" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>二つの要素が同じグループに属するかどうかを効率的に判定するのに木構造が使われうることがある。Union-Find Treeと呼ばれる。</p>
+<ul class="simple">
+<li><p>嘘つきパズル</p></li>
+</ul>
+<dl class="simple">
+<dt>　A, B, Cの3人のうち一人だけが嘘つきであとの二人は正直者です。嘘つきは嘘だけを言い、正直者はいつも本当のことを言います。3人が誰が嘘つきか知っているとして、3人の発言から、嘘つきはだれかを当てましょう。</dt><dd><ol class="arabic simple">
+<li><p>A 「Cは嘘つきです。」</p></li>
+<li><p>B 「Aは正直者です。」</p></li>
+<li><p>C 「Bは嘘つきです。」</p></li>
+</ol>
+</dd>
+</dl>
+<p>まず、最初のAの発言から、AとCは異なるグループです(Aが嘘つきならCは正直者、Aが正直者ならCは嘘つき)。つぎのBの発言からAとBは同じグループです。ですので、AとBをつないでおきます。最後のCの発言からBとCは別グループで、これはこれまでの発言と矛盾しません。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">([</span><span class="s2">&quot;A&quot;</span><span class="p">,</span><span class="s2">&quot;B&quot;</span><span class="p">,</span><span class="s2">&quot;C&quot;</span><span class="p">])</span> <span class="c1"># A,B,Cの3人がいます。</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span><span class="s2">&quot;B&quot;</span><span class="p">)</span> <span class="c1">#AとBは同じグループ</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>このように、同一グループの頂点にひとつずつ辺を加えていってもいいのですが、より複雑な条件では、辺の加え方のルールや同じグループかどうかの判定をうまく行うことが必要です。このような操作は、木構造を使って効率的に表現することができます。必要なのは併合と判定です。</p>
+<section id="id6">
+<h4>併合<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>二つの頂点を同じグループにまとめる。一方の頂点が属する木の根をもう一方の木の根につなげることで実現する。</p>
+</section>
+<section id="id7">
+<h4>判定<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>それぞれの要素の属する木の根を調べて、同じであれば同一グループ、異なれば異なるグループに属している。</p>
+<p>これらを実現するために、networkxでは、UnionFindというクラスが用意されている。UnionFindを使って上の問題を解くと以下の通り。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">uf</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">UnionFind</span><span class="p">([</span><span class="s2">&quot;A&quot;</span><span class="p">,</span><span class="s2">&quot;B&quot;</span><span class="p">,</span><span class="s2">&quot;C&quot;</span><span class="p">])</span>
+<span class="n">uf</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span><span class="s2">&quot;B&quot;</span><span class="p">)</span> <span class="c1"># union()で併合</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">uf</span><span class="o">.</span><span class="n">parents</span><span class="p">)</span> <span class="c1"># parentsは根を記録</span>
+
+<span class="n">uf</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">]</span><span class="o">==</span><span class="n">uf</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">]</span> <span class="c1"># AとBは同一グループか判定</span>
+</pre></div>
+</div>
+<p>もう少しややこしい問題に挑戦。</p>
+<dl class="simple">
+<dt>ある事件について、現場にいたA、B、C、D、Eの５人が次のような証言をしました。犯人はこの５人の中の１人です。犯人だけがウソをついており、その他の４人は本当のことを言っています。真犯人は誰になりますか。</dt><dd><ol class="arabic simple">
+<li><p>Aの証言「私はずっとCと一緒にいましたから、私もCも犯人ではありません。」</p></li>
+<li><p>Bの証言「わたしは犯人ではありません。」</p></li>
+<li><p>Cの証言「Eは犯人ではありません。」</p></li>
+<li><p>Dの証言「私から見えるところにCはずっといたので、犯人ではありません。」</p></li>
+<li><p>Eの証言「A、Bのどちらかが犯人です。」</p></li>
+</ol>
+</dd>
+</dl>
+<p>(<a class="reference external" href="https://www.manabinoba.com/math/1913.html">https://www.manabinoba.com/math/1913.html</a> の問題2を改変)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">uf</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">UnionFind</span><span class="p">([</span><span class="s2">&quot;A&quot;</span><span class="p">,</span><span class="s2">&quot;B&quot;</span><span class="p">,</span><span class="s2">&quot;C&quot;</span><span class="p">,</span><span class="s2">&quot;D&quot;</span><span class="p">,</span><span class="s2">&quot;E&quot;</span><span class="p">])</span> <span class="c1">#5人がいる</span>
+<span class="n">uf</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span><span class="s2">&quot;C&quot;</span><span class="p">)</span> <span class="c1"># Aの証言から</span>
+<span class="c1"># Bの証言は意味がないので無視</span>
+<span class="n">uf</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span><span class="s2">&quot;E&quot;</span><span class="p">)</span> <span class="c1">#Cの証言から</span>
+<span class="n">uf</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span><span class="n">D</span><span class="s2">&quot;) #Dの証言から</span>
+<span class="c1"># Eの証言は、AとBが別グループということなので、このままでOK</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">uf</span><span class="o">.</span><span class="n">parents</span><span class="p">)</span> <span class="c1">#根を確認</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id8">
+<h3>最小全域木<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>割愛します。興味のある人がいたら後日。</p>
+</section>
+</section>
+<section id="id9">
+<h2>格子構造<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<section id="id10">
+<h3>2次元格子<a class="headerlink" href="#id10" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>たとえば、平面上の移動を考えたとき、ある場所から行ける場所は、今いる場所に隣接した場所だけになる。このような、すぐ近くの点としか相互作用できない場合、2次元格子で表すことができる。多くの場合は正方格子が用いられるが、モデルとしての正方格子は無限につながっており、実際には有限部分を切り出した正方格子を扱う。もしくは、左右の端、上下の端をつなぐことで境界で起こる特殊な場合を避けることもある（周期的境界条件）。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">grid_2d_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="c1"># 5行4列の正方格子</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+<span class="c1">#参考</span>
+<span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">triangular_lattice_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="c1"># 三角格子</span>
+<span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">hexagonal_lattice_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="c1"># 六角格子</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id11">
+<h2>規則的なネットワークと実ネットワーク<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>ケーリーツリーや格子は、頂点や辺が規則的に配置されたネットワークでネットワークの理解の基本となるものである。しかし、これらは、いずれも実際のネットワークの特徴とは一致せず、実際のネットワークで起こる複雑な現象をシミュレートすることはできない。</p>
 </section>
 </section>
 
