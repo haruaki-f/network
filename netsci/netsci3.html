@@ -14,10 +14,11 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/translations.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
     <link rel="next" title="4. ちいさな世界" href="netsci4.html" />
-    <link rel="prev" title="2. 規則的なネットワーク" href="netsci2.html" /> 
+    <link rel="prev" title="2. 規則的なネットワークと木" href="netsci2.html" /> 
   </head><body>
       <div class="header" role="banner">
         <a href="../index.html">
@@ -27,7 +28,7 @@
       <div class="topnav" role="navigation" aria-label="top navigation">
       
         <p>
-        «&#160;&#160;<a href="netsci2.html">2. 規則的なネットワーク</a>
+        «&#160;&#160;<a href="netsci2.html">2. 規則的なネットワークと木</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">コンテンツ</a>
         &#160;&#160;::&#160;&#160;
@@ -41,19 +42,189 @@
   <section id="id1">
 <h1>3. 頂点間の距離<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
 <section id="id2">
-<h2>はじめに<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
-</section>
+<h2>有向グラフと無向グラフ<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>辺に方向のあるものを <strong>有向グラフ</strong> 、ないものものを <strong>無向グラフ</strong> と呼ぶ。webページのリンク関係や論文の引用関係、twitterのフォロー関係などは有向グラフで、電車の路線図や対面の知り合い関係、facebookの友達関係などは無向グラフで表す。</p>
+<p>有向グラフの次数には、入次数と出次数がある。このため、有向グラフは次数や辺の数の取り扱いが複雑になる。</p>
 <section id="id3">
-<h2>ネットワーク上の探索<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h3>共引用と書誌結合<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>有向グラフを無向グラフに変換する方法として、共引用と書誌結合がある。</p>
+<section id="co-citation">
+<h4>共引用(co-citation)<a class="headerlink" href="#co-citation" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p><strong>共引用</strong> は、複数の頂点への有向辺を持つ頂点があるときに、有向辺を向けられている頂点同士を無向辺でつなぐことをいう。</p>
+<p>たとえば、同じ文献から引用されている文献同士をつなぐことや、twitterで同じ人からフォローされている人同士をつなぐことに対応する。</p>
+<p>元の隣接行列を <span class="math notranslate nohighlight">\(A\)</span>、その転置行列を <span class="math notranslate nohighlight">\(A^T\)</span> とするとき、<span class="math notranslate nohighlight">\(A^TA\)</span> を求めて、その対角成分をすべて0にしたものが、共引用の隣接行列になる。
+(閉路の隣接行列のはなしを先週忘れた)</p>
+<a class="reference internal image-reference" href="../_images/fig3_1.PNG"><img alt="../_images/fig3_1.PNG" class="align-center" src="../_images/fig3_1.PNG" style="width: 422.0px; height: 141.20000000000002px;" /></a>
+</section>
+<section id="biblographic-coupling">
+<h4>書誌結合(biblographic coupling)<a class="headerlink" href="#biblographic-coupling" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p><strong>書誌結合</strong> は、共引用の反対で、同じ頂点への有向辺を持つ複数の頂点があるときに、その頂点同士を無向辺でつなぐことをいう。</p>
+<p>たとえば、同じ文献を引用している文献同士をつなぐことや、twitterで同じ人をフォローしている人同士をつなぐことに対応する。エルデシュ数はこれ。</p>
+<p>元の隣接行列を <span class="math notranslate nohighlight">\(A\)</span>、その転置行列を <span class="math notranslate nohighlight">\(A^T\)</span> とするとき、<span class="math notranslate nohighlight">\(AA^T\)</span> を求めて、その対角成分をすべて0にしたものが、共引用の隣接行列になる。</p>
+<a class="reference internal image-reference" href="../_images/fig3_2.PNG"><img alt="../_images/fig3_2.PNG" class="align-center" src="../_images/fig3_2.PNG" style="width: 436.8px; height: 135.20000000000002px;" /></a>
+</section>
+</section>
 </section>
 <section id="id4">
-<h2>最短路<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
-</section>
+<h2>ネットワーク上の距離<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>二つの頂点を結ぶ最短路に含まれる辺の数を <strong>距離</strong> と呼ぶ。
+すべての2点間の距離の平均値を平均距離、最大値を <strong>直径</strong> と呼ぶ。</p>
+<p>networkxでは、以下の通りの関数が用意されている。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Gを連結なグラフとして</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">all_pairs_shortest_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1"># Gのすべての点の距離</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1"># Gの平均距離</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">diameter</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1"># Gの直径</span>
+</pre></div>
+</div>
 <section id="id5">
-<h2>ランダムグラフ<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h3>規則的なグラフの平均距離<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>これまでに扱った、規則的なグラフの平均距離を計算してみよう。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">balanced_tree</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="c1"># tree</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++ 3*4 Tree ++++++&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ノードの数:&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平均距離:&quot;</span><span class="p">,</span><span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;直径:&quot;</span><span class="p">,</span><span class="n">nx</span><span class="o">.</span><span class="n">diameter</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;+++++ 11*11 グリッド ++++++&quot;</span><span class="p">)</span>
+<span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">grid_2d_graph</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">)</span> <span class="c1">#2D-grid</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ノードの数:&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平均距離:&quot;</span><span class="p">,</span><span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;直径:&quot;</span><span class="p">,</span><span class="n">nx</span><span class="o">.</span><span class="n">diameter</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id6">
+<h2>ネットワーク上の探索<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>ネットワーク上での探索には、いろいろなアルゴリズムがかかわる。それぞれ重要なアルゴリズムではあるが、プログラミングの練習になってしまうので、ちょっとここではアルゴリズムの中身は割愛。必要になったらやりましょう。</p>
 <ul class="simple">
-<li><p>パーコレーション</p></li>
+<li><dl class="simple">
+<dt>頂点の探索</dt><dd><ul>
+<li><p>幅優先探索</p></li>
+<li><p>深さ優先探索</p></li>
 </ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>最短路の探索</dt><dd><ul>
+<li><dl class="simple">
+<dt>全点対間最短路探索</dt><dd><ul>
+<li><p>Floyed-Worshall法</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>単一始点最短路探索</dt><dd><ul>
+<li><p>Bellman-Ford法</p></li>
+<li><p>Dijkstra法</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="id7">
+<h2>ランダムグラフ<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<section id="id8">
+<h3>ランダムグラフ<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>ランダムグラフは、それぞれの頂点がある確率ｐで辺を持つグラフを指す。これを、Erdos-Renyi modelと呼ぶ。</p>
+<p>これにしたがって、ランダムグラフの隣接行列は以下のように作ることができる。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="n">p</span><span class="o">=</span><span class="mf">0.05</span> <span class="c1">#辺を張る確率</span>
+<span class="n">n</span><span class="o">=</span><span class="mi">100</span> <span class="c1"># 頂点の数</span>
+<span class="n">Adj</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">))</span> <span class="c1"># 隣接行列</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span> <span class="c1">#すべての可能な頂点の組み合わせについて</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="n">j</span><span class="p">:</span> <span class="c1">#自己ループはなし</span>
+            <span class="n">Adj</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">&lt;</span><span class="n">p</span><span class="p">:</span> <span class="c1"># 確率ｐで辺</span>
+                <span class="n">Adj</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Adj</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+<span class="c1"># 隣接行列をグラフに変換</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_numpy_matrix</span><span class="p">(</span><span class="n">Adj</span><span class="p">)</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1"># Gは連結とはかぎらない</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h3>ランダムグラフの性質<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>ランダムグラフについても、平均距離、直径を見てみましょう。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ランダムグラフGを先に作る。</span>
+
+<span class="c1"># Gは連結とは限らないので、最大の連結成分をとりだす。</span>
+<span class="c1"># 連結でないグラフの平均距離は無限大になってしまう。</span>
+<span class="n">S</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1"># 連結成分をとりだす</span>
+<span class="c1"># connected_componentsの返り値はgeneratorなので、繰り返し処理の中で中身を作る。（eg. iterator）</span>
+
+<span class="c1"># 以下、最大成分を取り出す手続き。プログラミングの練習と思って。</span>
+<span class="n">max_size</span><span class="o">=</span><span class="mi">0</span>
+<span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">S</span><span class="p">:</span> <span class="c1"># 繰り返しで中身を見る</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">component</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">component</span><span class="p">)</span><span class="o">&gt;</span><span class="n">max_size</span><span class="p">:</span>
+        <span class="n">max_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+        <span class="n">subgraph</span><span class="o">=</span><span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">component</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="c1"># subgraph()は部分グラフを取り出す関数。</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++ random graph ++++++&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ノードの数:&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">subgraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平均距離:&quot;</span><span class="p">,</span><span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">subgraph</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;直径:&quot;</span><span class="p">,</span><span class="n">nx</span><span class="o">.</span><span class="n">diameter</span><span class="p">(</span><span class="n">subgraph</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>pがある程度大きい場合、大きい成分と残りの小さい成分になる。pが小さい場合、小さい成分がたくさんできる。ここでは、pを適当に調節して大きな成分の平均距離と直径をみましょう。</p>
+</section>
+<section id="s">
+<h3>相転移(S.カウフマン「自己組織化と進化の論理」より)<a class="headerlink" href="#s" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>ランダムグラフの一つの性質として、辺を持つ確率がある確率ｐを超えると、大きなかたまり（コンポーネント）が現れることがあります。頂点の数を <span class="math notranslate nohighlight">\(n\)</span> 、存在する辺の数を <span class="math notranslate nohighlight">\(e\)</span> とすると、辺の数が <span class="math notranslate nohighlight">\(e/n=1/2\)</span> を超えると、大きなかたまりができます。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span><span class="o">=</span><span class="mi">500</span> <span class="c1"># 頂点の数</span>
+<span class="n">R</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">Adj</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">))</span> <span class="c1"># 隣接行列</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="mi">2</span><span class="p">):</span>
+    <span class="c1">#始点と終点をランダムに選ぶ</span>
+    <span class="c1">#とりあえず、始点と終点が同じもしくはすでに選ばれた点でも気にしない</span>
+    <span class="n">s</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#始点を[0,n-1]から選ぶ</span>
+    <span class="n">t</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#終点を[0,n-1]から選ぶ</span>
+
+    <span class="c1"># 隣接行列上で始点と終点をつなぐ</span>
+    <span class="n">Adj</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+    <span class="n">Adj</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span> <span class="c1">#無向グラフなので両方向</span>
+
+    <span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">from_numpy_matrix</span><span class="p">(</span><span class="n">Adj</span><span class="p">)</span>
+    <span class="n">largest</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+    <span class="c1">#print(i,len(largest))</span>
+    <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">largest</span><span class="p">)</span>
+<span class="c1"># 以下描画</span>
+<span class="n">X</span><span class="o">=</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">n</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">R</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;num of edges/num of nodes&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;size of Big Component&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/fig3_3.png"><img alt="../_images/fig3_3.png" class="align-center" src="../_images/fig3_3.png" style="width: 400.0px; height: 253.60000000000002px;" /></a>
+</section>
+</section>
+<section id="id10">
+<h2>現実のグラフ<a class="headerlink" href="#id10" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>ここで現実のグラフも見ておきましょう。network data(<a class="reference external" href="http://www-personal.umich.edu/~mejn/netdata/">http://www-personal.umich.edu/~mejn/netdata/</a>)から、適当なネットワークをダウンロードして、colabratoryにアップロードしましょう。例として、Les Miserablesネットワークを使います。これは、レ・ミゼラブルの登場人物の人間関係のグラフだそうです。レ・ミゼラブルは読んだことないのでよくわかりませんが、いろんな教科書とかでよく例に出るネットワークなのでとりあえず。現実のグラフではないような気もしますが。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">read_gml</span><span class="p">(</span><span class="s2">&quot;lesmis.gml&quot;</span><span class="p">)</span> <span class="c1"># gml形式のグラフを読み込み</span>
+<span class="c1"># 保存はwrite_gml()でできる</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1"># 描画して確認</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++ lesmis graph ++++++&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ノードの数:&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平均距離:&quot;</span><span class="p">,</span><span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;直径:&quot;</span><span class="p">,</span><span class="n">nx</span><span class="o">.</span><span class="n">diameter</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>迂回路の話は次回。</p>
 </section>
 </section>
 
@@ -62,7 +233,7 @@
       <div class="bottomnav" role="navigation" aria-label="bottom navigation">
       
         <p>
-        «&#160;&#160;<a href="netsci2.html">2. 規則的なネットワーク</a>
+        «&#160;&#160;<a href="netsci2.html">2. 規則的なネットワークと木</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">コンテンツ</a>
         &#160;&#160;::&#160;&#160;
