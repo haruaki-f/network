@@ -182,7 +182,7 @@
 <p>pがある程度大きい場合、大きい成分と残りの小さい成分になる。pが小さい場合、小さい成分がたくさんできる。ここでは、pを適当に調節して大きな成分の平均距離と直径をみましょう。</p>
 </section>
 <section id="s">
-<h3>相転移(S.カウフマン「自己組織化と進化の論理」より)<a class="headerlink" href="#s" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<h3>相転移 (S.カウフマン「自己組織化と進化の論理」より)<a class="headerlink" href="#s" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p>ランダムグラフの一つの性質として、辺を持つ確率がある確率ｐを超えると、大きなかたまり（コンポーネント）が現れることがあります。頂点の数を <span class="math notranslate nohighlight">\(n\)</span> 、存在する辺の数を <span class="math notranslate nohighlight">\(e\)</span> とすると、辺の数が <span class="math notranslate nohighlight">\(e/n=1/2\)</span> を超えると、大きなかたまりができます。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span><span class="o">=</span><span class="mi">500</span> <span class="c1"># 頂点の数</span>
 <span class="n">R</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
@@ -217,7 +217,7 @@
 <p>ここで現実のグラフも見ておきましょう。network data(<a class="reference external" href="http://www-personal.umich.edu/~mejn/netdata/">http://www-personal.umich.edu/~mejn/netdata/</a>)から、適当なネットワークをダウンロードして、colabratoryにアップロードしましょう。例として、Les Miserablesネットワークを使います。これは、レ・ミゼラブルの登場人物の人間関係のグラフだそうです。レ・ミゼラブルは読んだことないのでよくわかりませんが、いろんな教科書とかでよく例に出るネットワークなのでとりあえず。現実のグラフではないような気もしますが。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">read_gml</span><span class="p">(</span><span class="s2">&quot;lesmis.gml&quot;</span><span class="p">)</span> <span class="c1"># gml形式のグラフを読み込み</span>
 <span class="c1"># 保存はwrite_gml()でできる</span>
-<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1"># 描画して確認</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># 描画して確認</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++ lesmis graph ++++++&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ノードの数:&quot;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()))</span>
