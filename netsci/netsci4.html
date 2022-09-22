@@ -14,6 +14,7 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/translations.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
     <link rel="prev" title="3. 頂点間の距離" href="netsci3.html" /> 
@@ -39,12 +40,136 @@
 <h1>4. ちいさな世界<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
 <section id="id2">
 <h2>はじめに<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
-</section>
+<p>Watts &amp; Strogatzの1998年の論文、&quot;Collective dynamics of 'small world' networks&quot;について、概観しましょう。1章で「複雑」ネットワークの科学は1998年に始まったとありましたが、おそらく、この論文のことを指していると思われます。ネットワークを考えるうえで、歴史的な論文ですので、正しく理解しましょう。</p>
 <section id="id3">
-<h2>クラスター性<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<h3>グラフとネットワーク<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>これまでは、頂点、辺といったグラフ理論の言葉を使ってきました。ここからは、ネットワークの言葉として、頂点はノードに、辺はエッジに言い換えましょう。グラフが比較的静的であったのに対して、動的なシステムとし扱うことが大きな違いでしょうか。</p>
+</section>
 </section>
 <section id="watts-strogatz-1998">
 <h2>Watts &amp; Strogatz (1998)<a class="headerlink" href="#watts-strogatz-1998" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<section id="introduction">
+<h3>introduction<a class="headerlink" href="#introduction" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>ホタルの光やコオロギの鳴き声の同期現象や物理現象の伝達・伝導、神経回路などがネットワークを用いてモデル化されているが、そこではregular networkかrandom networkが使われるのがふつうである。</p>
+<p>ここでは、regular networkを繋ぎ変えて、秩序を崩すことで、regular networkとrandom netwoekの中間的なネットワークを作ったら、regular graphのようにクラスター化されて、しかも、random graphのように短い平均距離をもつねっをわっくができた。これをsmall-world networkと呼ぶことにした。</p>
+<p>small-world networkでは、信号の伝搬速度、計算能力、同期性が向上することがわかった。</p>
+</section>
+<section id="watts-strogatz-graph">
+<h3>Watts-Strogatz graph<a class="headerlink" href="#watts-strogatz-graph" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>一次元格子に周辺境界条件を加えたもの、つまり、輪っかのようなグラフ（ring lattice）を基に考える。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">watts_strogatz_graph</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># 3つの引数は順番に、ノードの数、各ノードがいくつのエッジを持つか、rewiringの確率</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">circular_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;ring lattice&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/fig4_1.png"><img alt="../_images/fig4_1.png" class="align-center" src="../_images/fig4_1.png" style="width: 368.0px; height: 376.0px;" /></a>
+<p>ring latticeでは、各ノードはすぐ両隣のノードとつながっている。さらに、二つ隣、三つ隣とエッジを増やすことで、ring latticeを拡張する。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">watts_strogatz_graph</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># ここでは３つ隣までつないでみた</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">circular_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;extended ring lattice&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/fig4_2.png"><img alt="../_images/fig4_2.png" class="align-center" src="../_images/fig4_2.png" style="width: 368.0px; height: 376.0px;" /></a>
+<p>これをさらに、それぞれのエッジに関して確率ｐでランダムに別のノードへと繋ぎ変える</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">watts_strogatz_graph</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="c1"># ここでは、p=0.2とした</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">circular_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;watts-strogatz network&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/fig4_3.png"><img alt="../_images/fig4_3.png" class="align-center" src="../_images/fig4_3.png" style="width: 368.0px; height: 376.0px;" /></a>
+</section>
+<section id="id4">
+<h3>クラスター係数<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>クラスター係数は、簡単には、「ある人の友達同士が友達である確率」のことです。あるノードiにの次数がkであるとき、ノードiに隣接するノード同士のペアは <span class="math notranslate nohighlight">\(k(k-1)/2\)</span> 個あり、その中でエッジを持つペアの数の割合をクラスター係数と呼びます。クラスター係数が高いと、冗長性が増し、迂回路を多く持つことになります。</p>
+<p>また、各ノードすべてのクラスター係数をネットワーク全体で平均をとったものを、ネットワークのクラスター係数と呼びます。</p>
+<p>regular graph, watts-strogatz network, random graphで、クラスター係数と平均距離をくらべてみましょう。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G_reg</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">watts_strogatz_graph</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># ring lattice</span>
+<span class="n">G_sw</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">watts_strogatz_graph</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mf">0.2</span><span class="p">)</span> <span class="c1"># small world</span>
+<span class="n">G_rand</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">watts_strogatz_graph</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># random network: #確率1でランダムに繋ぎ変えるのでランダムグラフになる</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++++++++++++++++++&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;regular graph&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平均最短路長：&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">G_reg</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;クラスター係数：&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">average_clustering</span><span class="p">(</span><span class="n">G_reg</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++++++++++++++++++&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;small-workd network&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平均最短路長：&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">G_sw</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;クラスター係数：&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">average_clustering</span><span class="p">(</span><span class="n">G_sw</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++++++++++++++++++&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;random graph&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平均最短路長：&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">G_rand</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;クラスター係数：&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">average_clustering</span><span class="p">(</span><span class="n">G_rand</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>スモールワールド性<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>** 短い平均距離 ** と** 高いクラスター係数 ** の両方を満たす性質
+シミュレーションしてみよう。繋ぎ変え確率pを変化させて、クラスター係数と平均距離を確認する</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">C</span><span class="o">=</span><span class="p">[]</span><span class="c1">#クラスタ係数の入れ物</span>
+<span class="n">L</span><span class="o">=</span><span class="p">[]</span><span class="c1">#平均距離の入れ物</span>
+<span class="n">n</span><span class="o">=</span><span class="mi">1000</span>  <span class="c1"># ノードの数</span>
+<span class="n">k</span><span class="o">=</span><span class="mi">10</span> <span class="c1">#　各ノードの次数</span>
+
+<span class="c1">## regular graphの値を計算</span>
+<span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">watts_strogatz_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">C0</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">average_clustering</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">L0</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+<span class="c1"># 次のｐをためす</span>
+<span class="n">Prob</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">4056</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">2028</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">1024</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">512</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">256</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">128</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">64</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">32</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">16</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">Prob</span><span class="p">:</span>
+    <span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">watts_strogatz_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">p</span><span class="p">)</span> <span class="c1">#それぞれのｐについて計算</span>
+    <span class="n">c</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">average_clustering</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">l</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="c1">#regular graphに対する割合にして、入れ物に入れる</span>
+    <span class="n">C</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">/</span><span class="n">C0</span><span class="p">)</span>
+    <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">/</span><span class="n">L0</span><span class="p">)</span>
+
+<span class="c1"># 描画</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Prob</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;claster coefficient(C/C0)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Prob</span><span class="p">,</span><span class="n">L</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;path length(L/L0)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span> <span class="c1">#ｘ軸を対数軸に</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;rewiring probability&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/fig4_4.png"><img alt="../_images/fig4_4.png" class="align-center" src="../_images/fig4_4.png" style="width: 316.0px; height: 321.0px;" /></a>
+</section>
+<section id="id6">
+<h3>まとめ<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt>randomとregularの中間に、クラスター係数が大きくて、平均距離が小さいグラフが存在し、それは自然界に現れるグラフの多くに共通する特徴である</dt><dd><ul>
+<li><p>神経回路、電力網など</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>このような、small-world networkは、感染や伝播の広がりの速さは最短路長に比例し、感染力・伝播力が弱くてもクラスター係数が大きいと迂回路を多く持つため広く伝わりやすい。</p></li>
+<li><p>このような性質が、自然界、社会における、同期現象、パンデミック現象を説明すると考えられる。</p></li>
+</ul>
+</section>
 </section>
 </section>
 
