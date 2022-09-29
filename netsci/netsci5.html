@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>4. スケールフリーネットワーク &#8212; Network Science 0.0.1 ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/haiku.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/translations.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="prev" title="4. ちいさな世界" href="netsci4.html" /> 
+  </head><body>
+      <div class="header" role="banner">
+        <a href="../index.html">
+          <img class="logo" src="../_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        «&#160;&#160;<a href="netsci4.html">4. ちいさな世界</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">コンテンツ</a>
+        </p>
+
+      </div>
+      <div class="content" role="main">
+        
+        
+  <section id="id1">
+<h1>4. スケールフリーネットワーク<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>Barabasi &amp; Albert (1999)は、現実の多くのネットワークの次数の分布がべき乗則に従うことを明らかにしたうえで、ネットワークのでき方がそのような性質を生むことを突き止めました。ここでは、ネットワークは完全に複雑系に関連する現象として扱われ、また、Erdos-Renyi modelとは、全く異なった考えに基づいて生成されています。</p>
+<section id="id2">
+<h2>成長するネットワーク<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>Barabasi &amp; Albertのネットワークの大きな特徴は、その生成方法で、最初、小さなネットワークがあり、そこに新しいノードが付け加えられていきます。このときの、エッジの作り方が、べき乗分布をつくりだし、それによって、ネットワーク自体の性質が決まるという意味で、これは自己組織化と呼ぶことができます。エッジの作り方は、</p>
+<ul class="simple">
+<li><p>新しく追加されるノードは、既にたくさんのエッジをもつノードとつながれる確率が高い</p></li>
+</ul>
+<p>というもので、優先選択（preferencial attachment）と呼ばれます。</p>
+<section id="barabasi-albert-model">
+<h3>Barabasi-Albert model<a class="headerlink" href="#barabasi-albert-model" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>優先選択のルールのためには、最初にいくつかのノードが必要です。これを <span class="math notranslate nohighlight">\(m_0\)</span> とします。ここに一つずつノードが加えられていきますが、その時に、ノード <span class="math notranslate nohighlight">\(i\)</span> の次数を <span class="math notranslate nohighlight">\(k_i\)</span> としたとき、確率 <span class="math notranslate nohighlight">\(1/k_i\)</span> で、新しいノードはノード <span class="math notranslate nohighlight">\(i\)</span> との間にエッジを作成します。これを、目的のノード数 <span class="math notranslate nohighlight">\(n\)</span> になるまで繰り返します。</p>
+<p>ちょうど、プログラミングの練習にちょうどいい感じのてつづきですので、ちょっと確認しておきましょう。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># m:最初のノードの数, n: 最終的なノードの数</span>
+<span class="n">m</span><span class="o">=</span><span class="mi">4</span>
+<span class="n">n</span><span class="o">=</span><span class="mi">30</span>
+
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="c1"># 最初はm個のノードを持つ完全グラフ</span>
+
+<span class="c1"># [0,1,2,...,m]のリスト</span>
+<span class="n">count</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="c1"># ノードkの次数がcount[k]に入るようにする</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="n">count</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">):</span> <span class="c1"># mからnまで</span>
+    <span class="n">new_node</span><span class="o">=</span><span class="n">i</span> <span class="c1"># i番目のノードを加える</span>
+    <span class="n">plus</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="c1"># i番目のノードとエッジをはった頂点を記録</span>
+    <span class="n">num_of_edges</span><span class="o">=</span><span class="mi">0</span> <span class="c1"># i番目のノードの現時点での次数を記録</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="c1"># 新しいノードがターゲットにあるノードとつながる</span>
+        <span class="k">if</span> <span class="n">count</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="o">&gt;</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">():</span> <span class="c1">#確率はこんな感じ</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">new_node</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="c1">#新しいノードとj番目のノードにエッジ</span>
+            <span class="n">plus</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="n">num_of_edges</span><span class="o">+=</span><span class="mi">1</span>
+    <span class="n">count</span><span class="o">+=</span><span class="n">plus</span> <span class="c1"># 新しいノードが追加出来たら、次数のカウントを増やす</span>
+    <span class="n">count</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">num_of_edges</span>
+
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">),</span><span class="n">with_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ちょっときれいに描画してみる。色は次数中心性で付けています。次数中心性は次数を、ノードの数-1でわったものでした。大体のノードの次数が低いことがわかります。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">D</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">degree_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">P</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">nodes</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">plasma</span><span class="p">,</span><span class="n">node_color</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+<span class="n">labels</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/fig5_1.png"><img alt="../_images/fig5_1.png" class="align-center" src="../_images/fig5_1.png" style="width: 512.0px; height: 446.40000000000003px;" /></a>
+</section>
+</section>
+<section id="id3">
+<h2>次数分布<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>次数分布は次数ヒストグラムを書くことで確認できます。うえのとおり、グラフを作っていれば、リストcountから簡単に書けますが、一般にはnetworkxのdegree_histogram()関数を使って、以下のように書くことができます。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">H</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">degree_histogram</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1"># 度数を返す</span>
+<span class="c1">#print(H)</span>
+<span class="n">L</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">H</span><span class="p">)))</span> <span class="c1"># ラベル軸（階級）</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">H</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>なんとなくべき乗則が確認できましたか？
+べき乗則は、両対数グラフにすることで、直線になります。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">H</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">degree_histogram</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1"># 度数を返す</span>
+<span class="n">L</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">H</span><span class="p">)))</span> <span class="c1"># ラベル軸（階級）</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">H</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;square&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/fig5_3_1.png"><img alt="../_images/fig5_3_1.png" class="align-center" src="../_images/fig5_3_1.png" style="width: 589.0px; height: 224.0px;" /></a>
+<p>それでは、Erdos-Renyi のランダムグラフ、Watts &amp; Strogatzのsmall world network, Barabasi-Albert modelの次数分布を比べてみましょう。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">G_er</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">erdos_renyi_graph</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span> <span class="c1"># ER model</span>
+<span class="n">G_sw</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">watts_strogatz_graph</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mf">0.2</span><span class="p">)</span> <span class="c1"># small world</span>
+<span class="n">G_ba</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">barabasi_albert_graph</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="c1"># BA model</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++++++++++++++++++&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;random graph&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平均最短路長：&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">G_er</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;クラスター係数：&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">average_clustering</span><span class="p">(</span><span class="n">G_er</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++++++++++++++++++&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;small-workd network&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平均最短路長：&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">G_sw</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;クラスター係数：&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">average_clustering</span><span class="p">(</span><span class="n">G_sw</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++++++++++++++++++&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;scale-free network&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;平均最短路長：&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">average_shortest_path_length</span><span class="p">(</span><span class="n">G_ba</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;クラスター係数：&quot;</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">average_clustering</span><span class="p">(</span><span class="n">G_ba</span><span class="p">))</span>
+
+<span class="n">H_er</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">degree_histogram</span><span class="p">(</span><span class="n">G_er</span><span class="p">)</span>
+<span class="n">L_er</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">H_er</span><span class="p">)))</span>
+
+<span class="n">H_sw</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">degree_histogram</span><span class="p">(</span><span class="n">G_sw</span><span class="p">)</span>
+<span class="n">L_sw</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">H_sw</span><span class="p">)))</span>
+
+<span class="n">H_ba</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">degree_histogram</span><span class="p">(</span><span class="n">G_ba</span><span class="p">)</span>
+<span class="n">L_ba</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">H_ba</span><span class="p">)))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">L_er</span><span class="p">,</span><span class="n">H_er</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;random graph&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">L_sw</span><span class="p">,</span><span class="n">H_sw</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;small world&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">L_ba</span><span class="p">,</span><span class="n">H_ba</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;scale-free&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>random graphやsmall world networkの次数分布はほぼ正規分布となりますが、scale-free networkでは、べき乗則に沿った分布になります。</p>
+<a class="reference internal image-reference" href="../_images/fig5_2.png"><img alt="../_images/fig5_2.png" class="align-center" src="../_images/fig5_2.png" style="width: 696.8000000000001px; height: 255.20000000000002px;" /></a>
+</section>
+<section id="id4">
+<h2>そのほか<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>いろんな話題がこの章では詰め込まれています。</p>
+<ul class="simple">
+<li><p>コンフィグレーションモデル</p></li>
+<li><p>次数相関</p></li>
+<li><p>コミュニティー分析</p></li>
+</ul>
+<p>これらは、重要ではありますが、今日の話題と直接関係するわけでもないので、必要になったら確認しましょう。</p>
+</section>
+</section>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        «&#160;&#160;<a href="netsci4.html">4. ちいさな世界</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">コンテンツ</a>
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haruaki Fukuda.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+  </body>
+</html>
