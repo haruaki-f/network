@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>6. ネットワーク上の伝播 1 &#8212; Network Science 0.0.1 ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/haiku.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/translations.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="prev" title="4. スケールフリーネットワーク" href="netsci5.html" /> 
+  </head><body>
+      <div class="header" role="banner">
+        <a href="../index.html">
+          <img class="logo" src="../_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        «&#160;&#160;<a href="netsci5.html">4. スケールフリーネットワーク</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">コンテンツ</a>
+        </p>
+
+      </div>
+      <div class="content" role="main">
+        
+        
+  <section id="id1">
+<h1>6. ネットワーク上の伝播 1<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<section id="id2">
+<h2>はじめに<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>ネットワーク上での感染を考えましょう。ここで感染と呼んでいるのは、病気のみならず、いろいろな現象を含みます。噂の伝播や流行のようなものもある種の感染とみなせますし、特定の考えの浸透、例えば、「特定の商品の価値が高い」という考えが広まることも感染と同じであるとみなせます。</p>
+</section>
+<section id="id3">
+<h2>パーコレーション<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>パーコレーションは「浸透」を意味しており、スポンジや軽石のような多孔性の物質の片側から水を入れたときに、反対側までしみ出すことを指す。パーコレーションには、点同士のつながりの有無を考える <strong>ボンドパーコレーション</strong> と点の隣接を考える <strong>サイトパーコレーション</strong> があるが、ここではボンドパーコレーションのみを扱います。</p>
+<p>ボンドパーコレーションでは、どのくらいの確率で辺をつくると全体がつながるか、つまり巨大なかたまりができるかということが問題となります。</p>
+<p>辺をつくる確率 <span class="math notranslate nohighlight">\(p\)</span> を大きくするとつながりやすく、大きなかたまりができやすいことは自明ですが、ある確率 <span class="math notranslate nohighlight">\(p_c\)</span> 以上でのみ全体をつなぐような巨大なかたまりは存在し、 <span class="math notranslate nohighlight">\(p_c\)</span> 以下では存在しえないことが知られており、このことを <strong>相転移</strong> と呼び、この <span class="math notranslate nohighlight">\(p_c\)</span> を <strong>臨界確率</strong> と呼ぶ。</p>
+<p>ランダムグラフにおけるボンドパーコレーションについては、既に3章のときに見ました。ちょっと設定が違いますが、基本的には同じことです。
+コードを再掲します。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span><span class="o">=</span><span class="mi">500</span> <span class="c1"># 頂点の数</span>
+<span class="n">R</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">Adj</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">))</span> <span class="c1"># 隣接行列</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="mi">2</span><span class="p">):</span>
+    <span class="c1">#始点と終点をランダムに選ぶ</span>
+    <span class="c1">#とりあえず、始点と終点が同じもしくはすでに選ばれた点でも気にしない</span>
+    <span class="c1"># ここがランダムグラフ</span>
+    <span class="n">s</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#始点を[0,n-1]から選ぶ</span>
+    <span class="n">t</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#終点を[0,n-1]から選ぶ</span>
+
+    <span class="c1"># 隣接行列上で始点と終点をつなぐ</span>
+    <span class="n">Adj</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+    <span class="n">Adj</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span> <span class="c1">#無向グラフなので両方向</span>
+
+    <span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">from_numpy_matrix</span><span class="p">(</span><span class="n">Adj</span><span class="p">)</span>
+    <span class="n">largest</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+    <span class="c1">#print(i,len(largest))</span>
+    <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">largest</span><span class="p">)</span>
+<span class="c1"># 以下描画</span>
+<span class="n">X</span><span class="o">=</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">n</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">R</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;num of edges/num of nodes&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;size of Big Component&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>ここでは、ランダムグラフを想定しているので、辺を結ぶ両端点をランダムに選んでいるだけです。これを特定のネットワークに拡張するには、エッジの候補を要素とするリストを先に作っておき、そこからランダムに選ぶことで実現できます。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span><span class="o">=</span><span class="mi">500</span> <span class="c1"># 頂点の数</span>
+
+<span class="c1"># 先にネットワークを作っておく</span>
+<span class="c1"># 2d grid</span>
+<span class="c1">#G0=nx.grid_2d_graph(25,20)</span>
+<span class="c1">#G=nx.convert_node_labels_to_integers(G0) # labelをはりかえ（元のノードの名前が(0,1)とかなので）</span>
+
+<span class="c1">#G=nx.watts_strogatz_graph(n,8,0) #regular graph (つなぎ変え確率0のwsネットワーク）</span>
+<span class="c1">#G=nx.watts_strogatz_graph(n,8,0.2) #small worldつなぎ変え確率0.2</span>
+<span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">barabasi_albert_graph</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="mi">8</span><span class="p">)</span> <span class="c1">#scale free</span>
+
+<span class="n">E</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span> <span class="c1">#ネットワークGに含まれるエッジのリスト。この中からつなぐところを選んでいく</span>
+<span class="n">L0</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">E</span><span class="p">)</span> <span class="c1">#初期値を覚えておく</span>
+
+<span class="n">R</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">L0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">Adj</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">))</span> <span class="c1"># 隣接行列</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L0</span><span class="p">):</span>
+    <span class="c1">#エッジリストEからランダムに一つ選ぶ</span>
+    <span class="nb">id</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">E</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># ランダムに一つのインデクスを選ぶ</span>
+    <span class="n">edge</span><span class="o">=</span><span class="n">E</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="c1">#pop()は指定した位置の要素の値を取得して削除</span>
+
+    <span class="c1"># 隣接行列上で始点と終点をつなぐ</span>
+    <span class="n">Adj</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">=</span><span class="mi">1</span>
+    <span class="n">Adj</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">=</span><span class="mi">1</span> <span class="c1">#無向グラフなので両方向</span>
+
+    <span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">from_numpy_matrix</span><span class="p">(</span><span class="n">Adj</span><span class="p">)</span>
+    <span class="n">largest</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+    <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">largest</span><span class="p">)</span>
+<span class="c1"># 以下描画</span>
+<span class="n">X</span><span class="o">=</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L0</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">L0</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">R</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;edge probability&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;size of Big Component&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>いろいろとパラメータをかえてみてください。注意事項として、パーコレーションは、確率的に決めたネットワークで決まる浸透を表すことから、静的なモデルです。一方で、感染や伝播といった現象は、それまで観戦していなかった人が感染し、また、次の人にうつす、時間を持った動的な現象になります。</p>
+</section>
+<section id="id4">
+<h2>コンタクトプロセス<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>健康な人も病気になりますし、病気の人も一定期間をあけると健康に戻ります。このように、すべての人がS(susceptible,感染可能者)とI(infected, 感染者)のいずれかの状態をもち、S→Iの確率が決まっているようなモデルをコンタクトプロセスと呼びます。ある時間 <span class="math notranslate nohighlight">\(t\)</span> における各人の状態は <span class="math notranslate nohighlight">\(t-1\)</span> の状態に（のみ）依存することから、これは時間変数を持つダイナミックなモデルになります。</p>
+<section id="id5">
+<h3>平均場モデル<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>まずは、ネットワークの影響を無視した平均場モデルを考えましょう。これは、すべての人が他のすべてのひとにうつす可能性を持つことを仮定するので、完全グラフを考えるのと同じです。</p>
+<section id="id6">
+<h4>離散時間<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>最初に離散的な時間を考えます。感染者は他の人にある確率で病気をうつすのですが、d日で自然治癒するとします。これが、たとえば、学校などでおこるとして、ある日、感染者が登校すると確率 <span class="math notranslate nohighlight">\(\lambda\)</span> でd日間、他の人にうつすような状況で、一日のうちの途中で状態変化することはないとします。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">N</span><span class="o">=</span><span class="mi">500</span> <span class="c1">#人数</span>
+<span class="n">k</span><span class="o">=</span><span class="mi">3</span> <span class="c1">#最初の感染者数</span>
+
+<span class="n">prob</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">400</span> <span class="c1">#一日に感染させる確率</span>
+<span class="n">days</span><span class="o">=</span><span class="mi">500</span>
+<span class="n">V</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">days</span><span class="p">)</span>
+
+<span class="n">P</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">idx</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">P</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">P</span><span class="p">))</span>
+<span class="n">recover</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">recover</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">days</span><span class="p">):</span>
+    <span class="nb">next</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="c1"># 次の日の変化</span>
+
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span> <span class="c1">#一人ずつ見ていく</span>
+        <span class="k">if</span> <span class="n">P</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span> <span class="c1">#感染中だったら</span>
+            <span class="n">recover</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span> <span class="c1">#感染何日目かをふやす</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span> <span class="c1">#全員に対して</span>
+                <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">&lt;</span><span class="n">prob</span> <span class="ow">and</span> <span class="n">P</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="nb">next</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="c1">#確率probで健常者を感染させる</span>
+                    <span class="nb">next</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span> <span class="c1">#次の日に感染者になる</span>
+                    <span class="n">recover</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span> <span class="c1">#回復日数</span>
+    <span class="n">R</span><span class="o">=-</span><span class="mi">1</span><span class="o">*</span><span class="p">(</span><span class="n">recover</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1">#print(recover)</span>
+    <span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="o">+</span><span class="nb">next</span><span class="o">+</span><span class="n">R</span>
+    <span class="n">recover</span><span class="p">[</span><span class="n">recover</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+
+    <span class="c1">#print(np.sum(P))</span>
+    <span class="n">V</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">X</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">days</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">V</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;days&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;values&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">500</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h4>連続時間<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>連続時間の場合は、ちょっと複雑。来週やります。微分方程式になります。</p>
+</section>
+</section>
+</section>
+<section id="sir">
+<h2>SIRモデル<a class="headerlink" href="#sir" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>来週やります。</p>
+<p>離散です。コンタクトプロセスとの違いだけ見ましょう。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">time</span><span class="o">=</span><span class="mi">100</span> <span class="c1">#シミュレートの時間</span>
+<span class="n">N</span><span class="o">=</span><span class="mi">500</span> <span class="c1">#人数</span>
+<span class="n">k</span><span class="o">=</span><span class="mi">10</span> <span class="c1">#隣の何人とつながるか</span>
+<span class="n">p</span><span class="o">=</span><span class="mi">1</span> <span class="c1">#繋ぎ変え確率</span>
+<span class="n">r</span><span class="o">=</span><span class="mf">0.3</span> <span class="c1"># 感染確率</span>
+
+<span class="c1">#G=nx.watts_strogatz_graph(N,k,p)</span>
+<span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">barabasi_albert_graph</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">k</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># ちょっとだけ辺が減る</span>
+<span class="c1"># 隣接行列を返す。adj_mat = nx.to_numpy_matrix(G)</span>
+<span class="c1"># 隣接リストを返す。adj_list = nx.to_dict_of_lists(G)</span>
+<span class="n">g_list</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">to_dict_of_lists</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+<span class="c1">#Sは、not(IorR)なので省略</span>
+<span class="n">Infected</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="c1">#感染中か</span>
+<span class="n">Infected</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span> <span class="c1">#最初の感染</span>
+<span class="n">Recovered</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="c1">#回復後か</span>
+
+<span class="n">K</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="c1">#時間ごとの感染者数を入れる変数</span>
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">time</span><span class="p">):</span>
+    <span class="n">K</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Infected</span><span class="p">)</span> <span class="c1">#時間tにおける感染者数</span>
+    <span class="n">Next</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="c1">#次の時間の感染者候補のマーク</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span> <span class="c1"># 全員調べる</span>
+        <span class="k">if</span> <span class="n">Infected</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span> <span class="c1"># 感染してたら</span>
+            <span class="n">rnd</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">g_list</span><span class="p">[</span><span class="n">i</span><span class="p">]),))</span>
+            <span class="n">tf</span><span class="o">=</span><span class="n">rnd</span><span class="o">&lt;</span><span class="n">r</span>
+            <span class="n">gl</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="c1">#print(gl[tf==True],tf)</span>
+            <span class="n">Next</span><span class="p">[</span><span class="n">gl</span><span class="p">[</span><span class="n">tf</span><span class="o">==</span><span class="kc">True</span><span class="p">]]</span><span class="o">=</span><span class="mi">1</span>
+            <span class="c1">#for idx in g_list[i]:</span>
+                <span class="c1">#print(i,idx)</span>
+             <span class="c1">#   if random.random()&lt;r:</span>
+              <span class="c1">#      Next[idx]=1</span>
+
+            <span class="n">Infected</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span> <span class="c1"># 終わったら、感染者から回復者へ</span>
+            <span class="n">Recovered</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+    <span class="n">Infected</span><span class="p">[(</span><span class="n">Next</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">Recovered</span><span class="o">==</span><span class="mi">0</span><span class="p">)]</span><span class="o">=</span><span class="mi">1</span>
+    <span class="c1">#for j in range(N):</span>
+    <span class="c1">#    if Next[j]==1 and Recovered[j]==0: #候補リストに入っている、かつ、回復者でなければ</span>
+    <span class="c1">#       Infected[j]=1 #感染</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">K</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="n">N</span><span class="o">//</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        «&#160;&#160;<a href="netsci5.html">4. スケールフリーネットワーク</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">コンテンツ</a>
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haruaki Fukuda.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+  </body>
+</html>
