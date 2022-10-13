@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>7. ネットワーク上の伝播 2 &#8212; Network Science 0.0.1 ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/haiku.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/translations.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="prev" title="6. ネットワーク上の伝播 1" href="netsci6.html" /> 
+  </head><body>
+      <div class="header" role="banner">
+        <a href="../index.html">
+          <img class="logo" src="../_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        «&#160;&#160;<a href="netsci6.html">6. ネットワーク上の伝播 1</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">コンテンツ</a>
+        </p>
+
+      </div>
+      <div class="content" role="main">
+        
+        
+  <section id="id1">
+<h1>7. ネットワーク上の伝播 2<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<section id="id2">
+<h2>コンタクトプロセス<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>ノードとしてあらわされる個人は、各時点で健康（S, susceptible）か、感染（I, infected）のどちらかの状態を取ります。Sのひとは、Iと接触すると特定の確率で感染して、Iに状態を変化します。Iはいずれ治癒してSに変化します。このように、S→I→Sの変化をすることになります。</p>
+<p>これをモデル化するために、感染率 <span class="math notranslate nohighlight">\(\lambda\)</span> を、ひとりのIのひとから微小時間 <span class="math notranslate nohighlight">\(\Delta t\)</span> の間にSのひとが感染する確率を、<span class="math notranslate nohighlight">\(\lambda \Delta t\)</span> となるように決めましょう。そうすると、 <span class="math notranslate nohighlight">\(\Delta t\)</span> 後にSのひとは、 <span class="math notranslate nohighlight">\((近くの感染者の数)* \lambda \Delta t\)</span> がSが感染する確率になります。
+同様に、微小時間 <span class="math notranslate nohighlight">\(\Delta t\)</span> の間にIのひとは、 <span class="math notranslate nohighlight">\(\mu \Delta t\)</span> の確率で治癒します。</p>
+<p>ある時刻 <span class="math notranslate nohighlight">\(t\)</span> に健康な人と感染した人の割合を <span class="math notranslate nohighlight">\(S(t)\)</span> 、 <span class="math notranslate nohighlight">\(I(t)\)</span> とすると、</p>
+<div class="math notranslate nohighlight" id="equation-1">
+<span class="eqno">(1)<a class="headerlink" href="#equation-1" title="この数式へのパーマリンク">¶</a></span>\[S(t)+I(t)=1\]</div>
+<p>となります。そうすると、ノード数を <span class="math notranslate nohighlight">\(N\)</span> として、ある時刻 <span class="math notranslate nohighlight">\(t\)</span> には、健康な人は <span class="math notranslate nohighlight">\(NS(t)\)</span> 人、感染者は <span class="math notranslate nohighlight">\(NI(t)\)</span> 人いることになります。</p>
+<p>微小時間 <span class="math notranslate nohighlight">\(\Delta t\)</span> 後の感染者の数の変化は、新たな感染者分がへって、治癒者分が増えるので、</p>
+<div class="math notranslate nohighlight" id="equation-2">
+<span class="eqno">(2)<a class="headerlink" href="#equation-2" title="この数式へのパーマリンク">¶</a></span>\[NS(t+ \Delta t)-NS(t)=-NS(t)*I(t)* \lambda \Delta t + NI(t) \mu \Delta t\]</div>
+<p>両辺をNでわって、</p>
+<div class="math notranslate nohighlight" id="equation-3">
+<span class="eqno">(3)<a class="headerlink" href="#equation-3" title="この数式へのパーマリンク">¶</a></span>\[S(t+ \Delta t)-S(t)=-S(t)*I(t)* \lambda \Delta t + I(t) \mu \Delta t\]</div>
+<p>これを微分方程式に書き換えると、</p>
+<div class="math notranslate nohighlight" id="equation-4">
+<span class="eqno">(4)<a class="headerlink" href="#equation-4" title="この数式へのパーマリンク">¶</a></span>\[\frac{d}{dt} S(t) = - \lambda S(t)I(t) + \mu I(t)\]</div>
+<p>となります。同様に、感染者は、</p>
+<div class="math notranslate nohighlight" id="equation-5">
+<span class="eqno">(5)<a class="headerlink" href="#equation-5" title="この数式へのパーマリンク">¶</a></span>\[\frac{d}{dt} I(t) = \lambda S(t)I(t) - \mu I(t)\]</div>
+<p>となります。数式4,5は、増減を表すので、符号が逆転するだけと思っても大丈夫です。</p>
+<p>ここで、いずれ定常状態に落ち着くとすると、式5から、</p>
+<div class="math notranslate nohighlight" id="equation-6">
+<span class="eqno">(6)<a class="headerlink" href="#equation-6" title="この数式へのパーマリンク">¶</a></span>\[\frac{d}{dt} I(t) = \lambda S(t)I(t) - \mu I(t) = 0\]</div>
+<p>となり、病人がいるのなら、 <span class="math notranslate nohighlight">\(I(t) &gt; 0\)</span> なので、両辺を <span class="math notranslate nohighlight">\(I(t)\)</span> でわって、</p>
+<div class="math notranslate nohighlight" id="equation-7">
+<span class="eqno">(7)<a class="headerlink" href="#equation-7" title="この数式へのパーマリンク">¶</a></span>\[\lambda S(t) - \mu = 0\]</div>
+<p>となる。これは、定常状態を示すので、</p>
+<div class="math notranslate nohighlight" id="equation-8">
+<span class="eqno">(8)<a class="headerlink" href="#equation-8" title="この数式へのパーマリンク">¶</a></span>\[\frac{\mu}{\lambda} = S(\infty)\]</div>
+<p>となるので、定常状態でのSの割合は、 <span class="math notranslate nohighlight">\(\frac{\mu}{\lambda}\)</span> となることがわかる。
+また、 <span class="math notranslate nohighlight">\(\mu &gt; \lambda\)</span> では、病気は根絶されることもわかる。試してみよう。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">S</span><span class="o">=</span><span class="mf">0.99</span> <span class="c1">#初期の健康な人の割合</span>
+<span class="n">I</span><span class="o">=</span><span class="mf">0.01</span> <span class="c1">#初期の感染者の割合</span>
+
+<span class="n">la</span><span class="o">=</span><span class="mi">2</span>
+<span class="n">mu</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span> <span class="c1"># 0.1時間あたりに一人がうつす確率がla*dtで0.2, 治る確率がmu*dtで0.1</span>
+
+<span class="n">S_hist</span><span class="o">=</span><span class="p">[</span><span class="n">S</span><span class="p">]</span>
+<span class="n">I_hist</span><span class="o">=</span><span class="p">[</span><span class="n">I</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">):</span>
+    <span class="n">ds</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">la</span><span class="o">*</span><span class="n">S</span><span class="o">*</span><span class="n">I</span><span class="o">+</span><span class="n">mu</span><span class="o">*</span><span class="n">I</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span>
+    <span class="n">di</span><span class="o">=</span><span class="p">(</span><span class="n">la</span><span class="o">*</span><span class="n">S</span><span class="o">*</span><span class="n">I</span><span class="o">-</span><span class="n">mu</span><span class="o">*</span><span class="n">I</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span>
+    <span class="n">S</span><span class="o">+=</span><span class="n">ds</span>
+    <span class="n">I</span><span class="o">+=</span><span class="n">di</span>
+    <span class="c1">#print(S)</span>
+    <span class="n">S_hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">I_hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">I</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">S_hist</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="sir">
+<h2>SIRモデル<a class="headerlink" href="#sir" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>SIRでは、健康な人S、感染者I、感染して回復し免疫のついた回復者Rの3つの状態を取る。</p>
+<p>感染率 <span class="math notranslate nohighlight">\(\lambda\)</span> と治癒率 <span class="math notranslate nohighlight">\(\mu\)</span> をSISと同様に決めると、</p>
+<div class="math notranslate nohighlight" id="equation-9">
+<span class="eqno">(9)<a class="headerlink" href="#equation-9" title="この数式へのパーマリンク">¶</a></span>\[\begin{split}\frac{d}{dt} S(t) &amp;= - \lambda I(t)S(t)\\
+\frac{d}{dt} I(t) &amp;= \lambda I(t)S(t) - \mu I(t) \\
+\frac{d}{dt} R(t) &amp;= \mu I(t)\end{split}\]</div>
+<p>となる。</p>
+<p>SIS同様に書いてみましょう。ほとんど同じように書けます。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">S</span><span class="o">=</span><span class="mf">0.99</span>
+<span class="n">I</span><span class="o">=</span><span class="mf">0.01</span>
+<span class="n">R</span><span class="o">=</span><span class="mi">0</span>
+
+<span class="n">la</span><span class="o">=</span><span class="mi">2</span>
+<span class="n">mu</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span>
+
+<span class="n">S_hist</span><span class="o">=</span><span class="p">[</span><span class="n">S</span><span class="p">]</span>
+<span class="n">I_hist</span><span class="o">=</span><span class="p">[</span><span class="n">I</span><span class="p">]</span>
+<span class="n">R_hist</span><span class="o">=</span><span class="p">[</span><span class="n">R</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="n">ds</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">la</span><span class="o">*</span><span class="n">S</span><span class="o">*</span><span class="n">I</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span>
+    <span class="n">di</span><span class="o">=</span><span class="p">(</span><span class="n">la</span><span class="o">*</span><span class="n">S</span><span class="o">*</span><span class="n">I</span><span class="o">-</span><span class="n">mu</span><span class="o">*</span><span class="n">I</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span>
+    <span class="n">dr</span><span class="o">=</span><span class="p">(</span><span class="n">mu</span><span class="o">*</span><span class="n">I</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span>
+
+    <span class="n">S</span><span class="o">+=</span><span class="n">ds</span>
+    <span class="n">I</span><span class="o">+=</span><span class="n">di</span>
+    <span class="n">R</span><span class="o">+=</span><span class="n">dr</span>
+
+    <span class="n">S_hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">I_hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">I</span><span class="p">)</span>
+    <span class="n">R_hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">S_hist</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;susceptible&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">I_hist</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;infected&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">R_hist</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;recovered&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="id3">
+<h3>ネットワーク上のSIR<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>ちょっとややこしいです。あと、ちょっとさぼっています。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="n">N</span><span class="o">=</span><span class="mi">100</span>
+<span class="n">G</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">watts_strogatz_graph</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">0.3</span><span class="p">)</span> <span class="c1"># ネットワークがある</span>
+<span class="c1">#G=nx.barabasi_albert_graph(N,4)</span>
+<span class="n">g_list</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">to_dict_of_lists</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c1"># ネットワークの隣接行列</span>
+
+<span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="c1"># P[i]は頂点iの次数</span>
+
+<span class="n">la</span><span class="o">=</span><span class="mf">0.3</span> <span class="c1">#感染確率</span>
+<span class="n">mu</span><span class="o">=</span><span class="mf">0.2</span> <span class="c1">#治癒確率</span>
+<span class="n">k</span><span class="o">=</span><span class="mi">1</span> <span class="c1">#最初の感染者数</span>
+
+<span class="n">state</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="c1"># 頂点の状態 S:0, I:1, R:2</span>
+
+<span class="n">idx</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">state</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">I</span> <span class="o">=</span><span class="n">idx</span> <span class="c1">#感染者の番号を入れておく</span>
+
+<span class="n">NI</span><span class="o">=</span><span class="n">k</span> <span class="c1">#感染者の人数</span>
+<span class="n">NR</span><span class="o">=</span><span class="mi">0</span> <span class="c1">#回復者の人数</span>
+
+<span class="n">TI</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">TR</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">TS</span><span class="o">=</span><span class="p">[]</span>
+
+<span class="n">t</span><span class="o">=</span><span class="mi">0</span> <span class="c1">#時間</span>
+<span class="k">while</span> <span class="n">NI</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">t</span><span class="o">&lt;</span><span class="mi">10000</span><span class="p">:</span>
+    <span class="n">rate</span><span class="o">=</span><span class="n">la</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="n">state</span><span class="o">==</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="n">mu</span><span class="o">*</span><span class="n">NI</span> <span class="c1"># うつす可能性のある人の数＋治る可能性のある人の数＝すべての起こりうる変化の数</span>
+    <span class="c1"># 注１</span>
+    <span class="n">t</span> <span class="o">=</span><span class="n">t</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span><span class="o">/</span><span class="n">rate</span> <span class="c1">#ポアソン過程を仮定して、次に状態変化の起こる時間を計算</span>
+    <span class="n">rd</span><span class="o">=</span><span class="n">rate</span><span class="o">*</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+    <span class="c1">#print(I)</span>
+    <span class="k">if</span> <span class="n">rd</span><span class="o">&lt;</span><span class="n">mu</span><span class="o">*</span><span class="n">NI</span><span class="p">:</span>
+        <span class="c1"># 注2</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">I</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">v</span><span class="o">=</span><span class="n">I</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+        <span class="c1">#print(x)</span>
+        <span class="n">I</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+        <span class="c1">#print(I)</span>
+        <span class="n">state</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">=</span><span class="mi">2</span>
+
+        <span class="n">NI</span><span class="o">=</span><span class="n">NI</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">NR</span><span class="o">=</span><span class="n">NR</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">v</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">I</span><span class="p">)</span> <span class="c1"># うつす人</span>
+        <span class="n">vv</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">g_list</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="c1">#うつされる人</span>
+        <span class="k">if</span> <span class="n">state</span><span class="p">[</span><span class="n">vv</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">[</span><span class="n">vv</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+            <span class="n">I</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="n">vv</span><span class="p">)</span>
+            <span class="c1">#print(I)</span>
+            <span class="n">NI</span><span class="o">=</span><span class="n">NI</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="n">TI</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">t</span><span class="p">,</span><span class="n">NI</span><span class="p">])</span>
+    <span class="n">TR</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">t</span><span class="p">,</span><span class="n">NR</span><span class="p">])</span>
+    <span class="n">TS</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">t</span><span class="p">,</span><span class="n">N</span><span class="o">-</span><span class="n">NI</span><span class="o">-</span><span class="n">NR</span><span class="p">])</span>
+
+<span class="n">KI</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">TI</span><span class="p">)</span>
+<span class="n">KR</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">TR</span><span class="p">)</span>
+<span class="n">KS</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">TS</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">KS</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">KS</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;red&#39;</span><span class="p">,</span><span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;susceptible&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">KR</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">KR</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;green&#39;</span><span class="p">,</span><span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;recovered&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">KI</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">KI</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;infected&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="id4">
+<h4>注1について<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>それぞれの状態の変更は、独立なポアソン過程とみなせるので、いずれか一つの状態変化が起こる過程も、単位時間にrate回起こる事象のポアソン過程とみなせる。</p>
+<p>このとき、時刻Tまでに事象が起こる確率は、</p>
+<div class="math notranslate nohighlight" id="equation-10">
+<span class="eqno">(10)<a class="headerlink" href="#equation-10" title="この数式へのパーマリンク">¶</a></span>\[P(T&lt;=t)=1 - \exp(-rate*T)\]</div>
+<p>となる。だから、これを一様乱数random()からサンプルすると考えればいいので、</p>
+<div class="math notranslate nohighlight" id="equation-11">
+<span class="eqno">(11)<a class="headerlink" href="#equation-11" title="この数式へのパーマリンク">¶</a></span>\[random() = 1 - \exp(-rate*T)\]</div>
+<p>を変形して、</p>
+<div class="math notranslate nohighlight" id="equation-12">
+<span class="eqno">(12)<a class="headerlink" href="#equation-12" title="この数式へのパーマリンク">¶</a></span>\[T = \frac{\log(1-random())}{rate}\]</div>
+<p>となります。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>ポアソン過程</p>
+<p>たとえば、大学通りの交通量を調べるとして、一定時間内に通る車の数はだいたい決まっているはずです。(上のコードでのrate)
+それでも規則正しく車が来るわけではないので、次の車がいつ来るかを予測することはできません。でも、t時間内に何台の車が通るかを確率分布で示すことはできます。このような、ランダムに起こる事象の時間間隔を確率変数とする過程をポアソン過程と言います。</p>
+</div>
+</section>
+<section id="id5">
+<h4>注2について<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>randomをたくさん使っていますが、本当は一つで済むはずですし、本当はそれがいいと思います。
+ちょっと複雑になるので、こっちのほうがわかりやすいかなと思ってこうしました。</p>
+</section>
+</section>
+</section>
+</section>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        «&#160;&#160;<a href="netsci6.html">6. ネットワーク上の伝播 1</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">コンテンツ</a>
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Haruaki Fukuda.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+  </body>
+</html>
