@@ -15,7 +15,9 @@
    /netsci/netsci2
    /netsci/netsci3
    /netsci/netsci4
-
+   /netsci/netsci5
+   /netsci/netsci6
+   /netsci/netsci7
 
 
 * :ref:`search`
